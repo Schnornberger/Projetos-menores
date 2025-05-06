@@ -1,0 +1,15 @@
+JSON -JAvaScrip Objeto Notation : É um fromato de texto com base em um objeto javascript
+
+1.FORMATO DE OBJETO
+{
+    id:1,
+    nome: "um nome" ,
+    endereço: "um endereço",
+
+}
+2. FORMATO JASON
+{
+    "id":1,
+    "nome":"um nome",
+    "endereço":"um endereço"
+}
