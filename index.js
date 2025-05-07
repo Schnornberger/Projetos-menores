@@ -1,6 +1,7 @@
 const searchInput = document.getElementById('searchInput')
 const searchButton = document.getElementById ('searchButton')
 const bookContainer = document.getElementById ('bookContainer')
+const metaLivros = document.getElementById('metaLivros')
 
 searchButton.addEventListener('click', (event) => {
     event.preventDefault()
@@ -11,88 +12,47 @@ searchButton.addEventListener('click', (event) => {
 })
 
 function fetchBooks (query) {
-    const livros = [
-   
-        {
-            img:'./assets/livro1.jpg',
-            titulo: 'Ponto de Inflexão',
-            categoria: 'Desenvolvimento Pessoal',
-            preco: 69.99,
-            desconto: true
-            
-        },
-        {
-            img:'./assets/livro2.jpg',
-            titulo: 'O poder do aprendizado contínuo',
-            categoria: 'Desenvolvimento Pessoal',
-            preco: 69.99,
-            desconto: true
-            
-        },
-        {
-            img:'./assets/livro3.jpg',
-            titulo: '+ esperto que o diabo',
-            categoria: 'Desenvolvimento Pessoal',
-            preco: 69.99,
-            desconto: true
-            
-        },
-        {
-            img:'./assets/livro4.jpg',
-            titulo: 'O que se come no céu',
-            categoria: 'Desenvolvimento Pessoal',
-            preco: 69.99,
-            desconto: true
-            
-        },
-        {
-            img:'./assets/livro5.jpg',
-            titulo: 'A psicologia financeira',
-            categoria: 'Desenvolvimento Pessoal',
-            preco: 69.99,
-            desconto: true
-            
-        },
-        {
-            img:'./assets/livro6.jpg',
-            titulo: 'Ponto de Infleção',
-            categoria: 'A meta',
-            preco: 69.99,
-            desconto: true
-            
+    fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&language=por`)
+    .then(res => res.json())
+    .then(dados => {
+        const livrosFiltrados = dados.docs.filter(item =>
+        item.language.includes('por') && item.language.includes(`eng`)
+    ).slice(0,10);
+
+        if (livrosFiltrados.length===0) {
+            bookContainer.innerHTML = '<h1>Nenhum livro encontrado</h>'
+            return
         }
-    ]
-    
-    const livrosFiltrados = livros.filter(item => 
-        item.titulo.toLowerCase().includes(query) || 
-        item.categoria.toLowerCase().includes(query)
 
-    )
-
-    if (livrosFiltrados.length===0) {
-        bookContainer.innerHTML = '<h1>Nenhum livro encontrado</h>'
-        return
-    }
-
-    bookContainer.innerHTML = livrosFiltrados.map (item => {
-        return`
-            <div class="div-card">
-                <div class="div-img">
-                    <img src=${item.img} alt="capa do livro">
-                    <p class="tag-p">frete grátis</p>
-                </div>
-                <div class="div-texto">
-                    <div class="div-titulo">
-                        <h1>${item.titulo}</h1>
-                        <button>+</button>
+        bookContainer.innerHTML = livrosFiltrados.map (item => {
+            const urlImagem = `https://covers.openlibrary.org/b/id/${item.cover_i}-M.jpg`
+            return`
+                <div class="div-card">
+                    <div class="div-img">
+                        <img src='${urlImagem}'alt="capa do livro">
+                        <p class="tag-p">frete grátis</p>
                     </div>
-                    <h2><a href="">${item.categoria}</a></h2>
-                    <p>R$ ${item.preco}</p>
+                    <div class="div-texto">
+                        <div class="div-titulo">
+                            <h1 class= "truncade text-xs font-bold w-full">${item.title}</h1>
+                        </div>
+                        <h2 class="my-2">${item.author_name}</a></h2>
+                        <button onclick='adicionarLivro${urlImagem}' class="rounded-md flex justify-center w-full h-5 p-1 border border-blue-500"><i class="text-blue-500 fa-solid fa-plus"></i></button>
+                        
+                    </div>
                 </div>
-            </div>
-                `
-    
-    }).join('')
+            `}).join('')
+    })
 
+    .catch(erro =>{
+        console.log('Erro ao buscar livros:',erro)
+        bookContainer.innerHTML = '<p>Erro ao buscar livro</p>'
+    })
+}
+function adicionarLivro () {
+    metaLivros.innerHTML += `
+     <div class="div-card">
+                    <div class="div-img w-[60px]">
+                        <img src='${capa}'alt="capa do livro" class="w-[150px] d-block h-auto">`
 }
 
